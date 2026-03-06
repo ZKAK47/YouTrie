@@ -1,0 +1,26 @@
+# Dépendances
+node_modules/
+
+# Secrets
+.env
+private/
+credentials.json
+config.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Fichiers systèmes
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build / Dist
+dist/
+build/
+
+# Les données mises en cache
+src/cache/**/
+!src/cache/**/README.md
