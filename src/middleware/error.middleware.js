@@ -1,3 +1,5 @@
+import { config } from "../config/constants";
+
 export const errorHandler = (err, req, res, next) => {
     console.error('❌ Error:', err);
   
@@ -7,8 +9,8 @@ export const errorHandler = (err, req, res, next) => {
       ...(err.redirect && { redirect: err.redirect })
     };
   
-    if (process.env.NODE_ENV === 'development') {
-      response.stack = err.stack;
+    if (config.NODE_ENV === 'development') {
+      response.stack = err.stack; // Put the detailed error in response
     }
   
     res.status(status).json(response);

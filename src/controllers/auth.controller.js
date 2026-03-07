@@ -2,6 +2,7 @@ import { oauthStore } from '../database/oauth-store.js';
 import crypto from 'crypto';
 
 export const authController = {
+  // initiate the Google Login
   initiate: (req, res) => {
     const cookieSessionId = req.sessionId;
     
@@ -27,6 +28,7 @@ export const authController = {
     res.redirect(url);
   },
 
+  // process the Google Login's results
   callback: async (req, res) => {
     try {
       const { code, state: oauthState } = req.query;

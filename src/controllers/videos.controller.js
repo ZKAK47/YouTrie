@@ -1,9 +1,5 @@
 import { youtubeService } from '../services/youtube.service.js';
 import { cacheService } from '../services/cache.service.js';
-import { oauthStore } from '../database/oauth-store.js';
-import { prod_tt_sasportal } from 'googleapis/build/src/apis/prod_tt_sasportal/index.js';
-import { getPatch } from 'fast-array-diff';
-import arrayDiff from 'arraydiff';
 import { youtubeHelpers } from '../utils/youtube.helpers.js';
 
 export const videoController = {
@@ -15,12 +11,12 @@ export const videoController = {
     
     const youtube = youtubeService.createClient(client);
     
-    // Move on YouTube
+    // Move the video (and update it's note) on YouTube
     await youtubeService.moveVideo(youtube, {
       playlistItemId, playlistId, videoId, newPosition, note
     });
     
-    // Update local cache
+    // Update local cache to avoid waste of API quota on large playlists
     await cacheService.moveVideoInPlaylist(playlistId, userId, {
       playlistItemId, newPosition, note
     });
@@ -90,12 +86,17 @@ export const videoController = {
   }
 };
 
+// move element at index "index" to a new index by taking account of the offset after it's temporary removal
 function losslessMove(array, index, newPosition) {
-  const clone = [...array]
-  if (index === newPosition) return clone
-  // Ajuster newPosition si on déplace vers la droite
+  const clone = [...array] // avoid original array mutations
+
+  if (index === newPosition) return clone // the element is already at it's correct position
+
+  // removing an element offsets every others (next) element in the right by -1
   const adjustedPos = index < newPosition ? newPosition - 1 : newPosition
-  const [indexedEl] = clone.splice(index, 1)
-  clone.splice(adjustedPos, 0, indexedEl)
+
+  const [indexedEl] = clone.splice(index, 1) // remove and store the element
+
+  clone.splice(adjustedPos, 0, indexedEl) // push the element at the correct position
   return clone
 }
