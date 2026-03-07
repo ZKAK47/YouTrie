@@ -14,12 +14,16 @@ requiredEnv.forEach((key) => {
 });
 
 export const config = {
-  PORT: Number(process.env.PORT),
+  PORT: Number(process.env.PORT) || 3000,
   NODE_ENV: process.env.NODE_ENV || 'development',
   YOUTUBE: {
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     redirectUri: process.env.GOOGLE_REDIRECT_URI
+  },
+  MONGODB: {
+    DB_URI:process.env.DB_URI,
+    DB_NAME:"YouTrie",
   },
   CACHE: {
     PLAYLIST_TTL: 86400, // 24h en secondes

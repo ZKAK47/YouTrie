@@ -4,7 +4,9 @@ import { authService } from '../services/auth.service.js';
 import { AppError } from '../utils/errors.js';
 import { config } from '../config/constants.js';
 
-const uri = process.env.DB_URI;
+const {DB_URI, DB_NAME} = config.MONGODB
+
+const uri = DB_URI;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -13,15 +15,15 @@ const client = new MongoClient(uri, {
   }
 });
 
-const db = client.db("YouTrie");
-const usersCollection = db.collection("accounts")
+const db = client.db(DB_NAME);
+const usersCollection = db.collection("users")
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    await db.command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } 
   catch (e) {
