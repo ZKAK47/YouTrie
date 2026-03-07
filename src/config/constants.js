@@ -1,17 +1,20 @@
 import dotenv from 'dotenv';
 
-// Charge les variables du fichier .env
+// charge .env
 dotenv.config();
 
-// Liste des variables obligatoires
+// variables nécessaires
 const requiredEnv = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'PORT'];
 
 // Vérification rapide : si une clé manque, on arrête tout
+const missingEnv = []
 requiredEnv.forEach((key) => {
   if (!process.env[key]) {
-    throw new Error(`Erreur : La variable d'environnement ${key} est manquante.`);
+    missingEnv.push(key)
   }
 });
+
+if (missingEnv.length) throw new Error(`missing required variable(s) : ${missingEnv.join(", ")}`)
 
 export const config = {
   PORT: Number(process.env.PORT) || 3000,

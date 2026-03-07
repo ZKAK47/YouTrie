@@ -1,29 +1,22 @@
-import { google } from 'googleapis';
 import { oauthStore } from '../database/oauth-store.js';
-import { authService } from '../services/auth.service.js';
-import { AppError } from '../utils/errors.js';
-import { config } from '../config/constants.js';
 import crypto from 'crypto';
 
 export const authController = {
   initiate: (req, res) => {
-    // Le cookie sessionId (ex: "c8888616b7cf1c174e32e81d1439d30c")
     const cookieSessionId = req.sessionId;
     
-    // Générer un state OAuth (UUID)
+    // oauth state generation for security reasons
     const oauthState = crypto.randomUUID();
     
     console.log('🔐 Initiate auth:', {
-      cookieSessionId,  // "c8888616b7cf1c174e32e81d1439d30c"
-      oauthState        // "61360d3e-017e-4d15-97bb-d6d85c7c941c"
+      cookieSessionId,
+      oauthState
     });
-
+    
+    // store temp user in RAM and get the generated oauth2client
     const {oauth2Client} = oauthStore.insertTemporaryUser({cookie:cookieSessionId, userId:oauthState})
-  
-    // STOCKER LE CLIENT AVEC LE STATE (pas le cookie !)
-  
-    console.log('✅ Stockage temporaire:');
-  
+
+    // url for Google Account Consent Page
     const url = oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: ['openid', 'https://www.googleapis.com/auth/youtube'],
@@ -43,41 +36,37 @@ export const authController = {
         cookieSessionId: req.sessionId 
       });
   
-      // 1️⃣ Récupérer le vrai cookie sessionId depuis le mapping
+      // get the stored user info
       const clientObject = await oauthStore.getTemporaryUser({userId:oauthState})
       const cookieSessionId = clientObject.cookie
       
       if (!cookieSessionId) {
-        throw new Error('Session expirée - état OAuth inconnu');
+        throw new Error('No temporary user found or token expired');
       }
-  
-      const tempClient = clientObject.oauth2Client;
+
+
+      const client = clientObject.oauth2Client;
       
-      if (!tempClient) {
-        throw new Error('Client OAuth temporaire introuvable');
+      if (!client) {
+        throw new Error('No Google Oauth client found');
       }
   
-      // 3️⃣ Échanger le code contre des tokens
-      const { tokens } = await tempClient.getToken(code);
-      console.log(tokens)
+      // get the tokens by using the code sent by the Google callback
+      const { tokens } = await client.getToken(code);
       const {refresh_token,access_token,id_token} = tokens
-      tempClient.setCredentials(tokens);
+      // use tokens to connect the user
+      client.setCredentials(tokens);
   
-      // 4️⃣ Générer un vrai userId permanent
+      // generate a permanent user_id
       const permanentUserId = `user_${crypto.randomBytes(8).toString('hex')}`;
   
-      // 5️⃣ STOCKER DÉFINITIVEMENT
-      // - Associe le cookie au userId permanent
-      oauthStore.removeUser({cookie:cookieSessionId, userId:oauthState, oauth2Client:tempClient})
+      // remove the temporary user
+      oauthStore.removeUser({cookie:cookieSessionId, userId:oauthState, oauth2Client:client})
 
-      await oauthStore.insertUser({cookie:cookieSessionId, userId:permanentUserId, oauth2Client:tempClient, refresh_token, access_token, id_token})
+      // store the permanent user in the database
+      await oauthStore.insertUser({cookie:cookieSessionId, userId:permanentUserId, oauth2Client:client, refresh_token, access_token, id_token})
   
-      console.log('✅ Stockage permanent:', {
-        cookie: cookieSessionId,
-        userId: permanentUserId,
-      });
-  
-      // 7️⃣ Répondre au frontend
+      // Close the Google connect window
       res.send(`
         <script>
           if (window.opener) {
@@ -92,6 +81,7 @@ export const authController = {
       `);
   
     } catch (error) {
+      // Log the error and close the Google Connection window
       console.error('❌ Auth callback error:', error);
       res.status(500).send(`
         <script>
@@ -107,18 +97,22 @@ export const authController = {
     }
   },
 
+  // Check if the user is connected
   status: async (req, res) => {
+    // try to find the user's Google Account, it returns null if nothing was found
     let userObject = await oauthStore.getUser({cookie:req.sessionId});
-    if (!userObject) userObject = {}
+
+    if (!userObject) userObject = {} // transform None/undefined into an object to avoid errors
     res.json({
-      authenticated: !!userObject.oauth2Client,
+      authenticated: !!userObject.oauth2Client, // the account exists (true or false)
       userId: userObject.userId,
       sessionId: req.sessionId
     });
   },
 
+  
+  // Clear session
   logout: async (req, res) => {
-    // Clear session
     removeUser(req.sessionId);
     res.json({ success: true });
   }

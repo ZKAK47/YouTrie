@@ -7,7 +7,7 @@ const router = Router();
 // All playlist routes require authentication
 router.use(validateSession);
 
-router.get('/', playlistController.getAll);
+router.get('/', playlistController.getPlaylists);
 router.get('/:playlistId/videos', playlistController.getVideos);
 
 export default router;
