@@ -49,7 +49,6 @@ class OAuthStore {
 
     try {
       const result = await getUserObjectByDB(cookie, this)
-      console.log(result)
       return result
     } catch (e) {
       console.error("db inaccessible", e)
@@ -57,8 +56,8 @@ class OAuthStore {
   }
 
   insertTemporaryUser({cookie, userId}) {
-    generateOauth2()
-    return this.saveUserInMap({cookie, userId})
+    const oauth2Client = generateOauth2()
+    return this.saveUserInMap({cookie, userId, oauth2Client})
   }
 
   // Utile pour les flux temporaires (ex: pendant le callback OAuth)
@@ -143,8 +142,6 @@ function generateOauth2(access_token, refresh_token) {
   if (access_token) tokens.access_token = access_token;
   if (refresh_token) tokens.refresh_token = refresh_token;
 
-  console.log(tokens)
-
   if (Object.keys(tokens).length > 0) {
     client.setCredentials(tokens);
   }
@@ -154,7 +151,6 @@ function generateOauth2(access_token, refresh_token) {
 
 async function saveUserInDB(userObject) {
   const {userId, oauth2Client, id_token, refresh_token, cookie} = userObject
-  console.log(refresh_token)
   const ticket = await oauth2Client.verifyIdToken({
     idToken: id_token,
     audience: config.YOUTUBE.client_id,
@@ -186,7 +182,6 @@ async function getUserObjectByDB(cookie, OAuthStore) {
     cookie,
     oauth2Client
   }
-  console.log(userObject)
   OAuthStore.saveUserInMap(userObject)
   return userObject
 }
