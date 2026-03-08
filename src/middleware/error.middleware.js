@@ -1,4 +1,4 @@
-import { config } from "../config/constants";
+import { config } from "../config/constants.js";
 
 export const errorHandler = (err, req, res, next) => {
     console.error('❌ Error:', err);

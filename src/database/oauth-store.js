@@ -1,7 +1,5 @@
 import { MongoClient, ServerApiVersion } from 'mongodb'
 import { google } from 'googleapis';
-import { authService } from '../services/auth.service.js';
-import { AppError } from '../utils/errors.js';
 import { config } from '../config/constants.js';
 
 const {DB_URI, DB_NAME} = config.MONGODB

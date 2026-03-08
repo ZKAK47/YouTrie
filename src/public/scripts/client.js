@@ -1,5 +1,5 @@
-import { YouTriePlayer } from "./playa.js"
-import { PlaylistList } from "./playlistObject.js"
+import { YouTriePlayer } from "./extended-iframe-api.js"
+import { PlaylistList } from "./playlist-store.js"
 
 const style = document.createElement("style")
 
