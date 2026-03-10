@@ -102,7 +102,7 @@ export const authController = {
   // Check if the user is connected
   status: async (req, res) => {
     // try to find the user's Google Account, it returns null if nothing was found
-    let userObject = await oauthStore.getUser({cookie:req.sessionId});
+    let userObject = await oauthStore.getUser({cookie:req?.cookies.sessionId});
 
     if (!userObject) userObject = {} // transform None/undefined into an object to avoid errors
     res.json({
