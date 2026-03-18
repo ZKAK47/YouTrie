@@ -7,6 +7,8 @@ const modeList = {
     order:true,
 }
 
+const navigationButtonMap = new WeakMap()
+
 export class PlaylistList {
     constructor(node, {renderLimit = 200, onVideoClick = ()=>{}, search} = {}) {
         this.renderLimit = renderLimit
@@ -165,43 +167,62 @@ export class PlaylistList {
     
 
         if (!videoList) {
-        // --- Pagination buttons ---
-        const nav = document.createElement('div');
-        nav.style.display = 'flex';
-        nav.style.justifyContent = 'space-between';
-        nav.style.marginTop = '10px';
-    
-        // Bouton précédent
-        if (page > 0) {
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = '⬅ Précédent';
-            prevBtn.addEventListener('click', () => {
-                this.renderPlaylist(playlistId, page - 1);
-            });
-            nav.appendChild(prevBtn);
-        }
-    
-        // Bouton suivant
-        if (end < playlistList.length) {
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Suivant ➡';
-            nextBtn.addEventListener('click', () => {
-                this.renderPlaylist(playlistId, page + 1);
-            });
-            nav.appendChild(nextBtn);
-        }
-    
-        container.appendChild(nav);
-
-        // Calcul du nombre total de pages
-        const totalPages = Math.ceil(playlistList.length / this.renderLimit);
-
-        // Clamp de la page demandée
-        const validPage = Math.max(0, Math.min(page, totalPages - 1));
-
-        // Mise à jour propre
-        this.actualPage = validPage;
-
+            // --- Pagination nav encapsulé ---
+            const nav = document.createElement('div');
+            nav.classList.add('pagination-nav'); // classe pour le style
+            nav.style.display = 'flex';
+            nav.style.justifyContent = 'center';
+            nav.style.alignItems = 'center';
+            nav.style.gap = '5px';
+            nav.style.marginTop = '10px';
+        
+            // Calcul du nombre total de pages
+            const totalPages = Math.ceil(playlistList.length / this.renderLimit);
+        
+            // Clamp de la page demandée
+            const validPage = Math.max(0, Math.min(page, totalPages - 1));
+            this.actualPage = validPage;
+        
+            // --- Bouton précédent ---
+            if (page > 0) {
+                const prevBtn = document.createElement('button');
+                prevBtn.textContent = '⬅';
+                prevBtn.classList.add('pagination-prev');
+                navigationButtonMap.set(prevBtn, page - 1);
+                prevBtn.addEventListener('click', () => this.renderPlaylist(playlistId, page - 1));
+                nav.appendChild(prevBtn);
+            }
+        
+            // --- Liens des pages ---
+            for (let i = 0; i < totalPages; i++) {
+                const pageLink = document.createElement('a');
+                pageLink.href = '#';
+                pageLink.textContent = i + 1;
+                pageLink.classList.add('pagination-page');
+                if (i === validPage) pageLink.classList.add('active-page'); // page actuelle
+        
+                // Gestion via navigationButtonMap
+                navigationButtonMap.set(pageLink, i);
+                pageLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.renderPlaylist(playlistId, i);
+                });
+        
+                nav.appendChild(pageLink);
+            }
+        
+            // --- Bouton suivant ---
+            if (page < totalPages - 1) {
+                const nextBtn = document.createElement('button');
+                nextBtn.textContent = '➡';
+                nextBtn.classList.add('pagination-next');
+                navigationButtonMap.set(nextBtn, page + 1);
+                nextBtn.addEventListener('click', () => this.renderPlaylist(playlistId, page + 1));
+                nav.appendChild(nextBtn);
+            }
+        
+            // Ajout dans le conteneur
+            container.appendChild(nav);
         }
     }
     searchVideos(keywords, playlistId = this.actualPlaylist) {
@@ -424,6 +445,7 @@ function createVideoNode(v) {
     const div = document.createElement('div')
     div.className = 'video'
     div.classList.add('selectable')
+    if (v.blocked) div.classList.add('blocked')
     div.id = v.playlistItemId
     div.dataset.videoId = v.videoId
     div.dataset.playlistItemId = v.playlistItemId
@@ -432,12 +454,14 @@ function createVideoNode(v) {
     div.dataset.note = v.note ? v.note : ""
     div.value = v.position + 1
     div.innerHTML = `
-        <div style="position:relative">
-          <small class="duration">${formatDuration(v.duration)}</small>
-          <img src="${v.thumbnail}" alt="${v.title}">
+        <div class="thumbnail-wrapper" style="position:relative">
+          ${v.duration ? `<small class="duration">${formatDuration(v.duration)}</small>` : ""}
+          ${v.thumbnail ? `<img src="${v.thumbnail}" alt="${v.title}">` : ""}
         </div>
-        <h4 class="title">${v.title}</h3>
-        <span class="channel">${v.channelTitle}</span>
+        <div class="label-container">
+            <h4 class="title">${v.title}</h3>
+            <span class="channel">${v.channelTitle || "-"}</span>
+        </div>
         <small class="little-note">${v.position + 1}</small>
     `
     videoNodeMap.set(v.playlistItemId, div)
@@ -517,3 +541,17 @@ function findVideoIdFromParents(element) {
   
     return undefined;
 }
+const style = document.createElement('style');
+style.textContent = `
+    .pagination-nav button, .pagination-nav a {
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+    .pagination-nav a.active-page {
+        font-weight: bold;
+        cursor:default;
+    }
+`;
+document.head.appendChild(style);

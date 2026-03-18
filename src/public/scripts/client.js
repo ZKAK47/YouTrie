@@ -33,9 +33,27 @@ style.textContent = `
   }
 
   .video {
+    display:flex;
+    flex-direction:column;
+    height:10%;
     width:100%;
     position:relative;
     box-sizing:border-box;
+  }
+
+  .video.blocked {
+    border:1px solid red;
+  }
+
+  .video .thumbnail-wrapper {
+    height:50%;
+    background-image:
+    linear-gradient(45deg, rgba(200,200,200,0.4) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(200,200,200,0.4) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(200,200,200,0.4) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(200,200,200,0.4) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
   }
 
   .checkers {
@@ -84,7 +102,14 @@ style.textContent = `
     width:100%;
     background: #00000077;
     justify-content:center;
-    display:flex
+    display:flex;
+    text-overflow: ellipsis;
+  }
+
+  .label-container {
+    flex:1;
+    display:flex;
+    flex-direction:column;
   }
 
   .channel {

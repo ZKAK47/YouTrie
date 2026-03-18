@@ -82,10 +82,21 @@ export const youtubeHelpers = {
     },
   
     fillPlaylistVideos(items, videoMap) {
-      return items.map(item => ({
-        ...item,
-        ...(videoMap.get(item.videoId) || {})
-      }));
+      const result = []
+      for (const item of items) {
+        const videoData = videoMap.get(item.videoId) || {}
+        if (Object.keys(videoData).length === 0) {
+          videoData.blocked = true
+          videoData.restriction = item.title
+          videoData.bcategory = 'missing'
+        }
+        const merged = {
+          ...item,
+          ...videoData
+        }
+        result.push(merged)
+      }
+      return result
     },
 
     getVideosToMove(allVideos, videosToMove, finalPosition) {
