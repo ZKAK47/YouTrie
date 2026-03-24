@@ -5,8 +5,10 @@ const googleButton = document.getElementById("ToGoogle");
 const googleContainer = document.getElementById("GoogleC");
 let authCheckInProgress = false;
 
+googleButton.disabled = true
+
 // Vérifie l’état d’auth au chargement
-checkAuthStatus();
+checkAuthStatus().then(_ => googleButton.disabled = false);
 
 async function checkAuthStatus() {
   // Éviter les appels multiples
