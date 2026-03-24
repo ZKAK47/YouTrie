@@ -106,7 +106,7 @@ export const authController = {
 
     if (!userObject) userObject = {} // transform None/undefined into an object to avoid errors
     res.json({
-      authenticated: !!userObject.oauth2Client, // the account exists (true or false)
+      authenticated: !!userObject.oauth2Client?.credentials?.access_token, // the account exists and have tokens (if the account doesn't have any, it isn't logged)
       userId: userObject.userId,
       sessionId: req.sessionId
     });
