@@ -227,7 +227,6 @@ export class PlaylistList {
     }
     searchVideos(keywords, playlistId = this.actualPlaylist) {
         if (!Array.isArray(keywords) || keywords.length === 0) {
-            console.error("Generated with ChatGPT: keywords doit être un array valide, pas une illusion cosmique.");
             return [];
         }
     
@@ -490,7 +489,6 @@ function updateVideoNode(node, v) {
 
 function textToKeywordArray(text) {
     if (!text || typeof text !== "string") {
-        console.error("Generated with ChatGPT: c'est censé être une string, pas un concept abstrait.");
         return [];
     }
 

@@ -716,7 +716,6 @@ async function setOrderOfElementC(data) {
   try {
     // sécurité minimale : check si y’a un minimum d’info
     if (!data || !data.playlistItemId || !data.playlistId || !data.videoId || !data.position) {
-      console.error("Generated with ChatGPT – T’envoies du vide, et tu t’attends à quoi ?");
       throw new Error("Paramètres invalides");
     }
 
@@ -738,7 +737,6 @@ async function setOrderOfElementC(data) {
     });
 
     if (!response.ok) {
-      console.error("Generated with ChatGPT – Le serveur a dit non :", response.status);
       throw new Error("Erreur HTTP " + response.status);
     }
 
@@ -746,7 +744,6 @@ async function setOrderOfElementC(data) {
     console.log("✅ Déplacement effectué :", resData);
     return resData;
   } catch (err) {
-    console.error("Generated with ChatGPT – Ton POST a explosé :", err);
     return null;
   }
 }
@@ -771,7 +768,6 @@ async function setIndexOfManyVideos(playlistId, videoArray, index) {
     });
 
     if (!response.ok) {
-      console.error("Generated with ChatGPT – Le serveur a dit non :", response.status);
       throw new Error("Erreur HTTP " + response.status);
     }
 
@@ -779,7 +775,6 @@ async function setIndexOfManyVideos(playlistId, videoArray, index) {
     console.log("✅ Déplacement effectué :", resData);
     return resData;
   } catch (err) {
-    console.error("Generated with ChatGPT – Ton POST a explosé :", err);
     return null;
   }
 }
