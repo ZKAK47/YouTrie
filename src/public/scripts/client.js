@@ -46,7 +46,7 @@ async function checkAuthStatus() {
 }
 
 function showLoginButton() {
-  if (googleContainer) googleContainer.style.display = 'block';
+  if (googleContainer) googleContainer.style.display = '';
   if (googleButton) {
     googleButton.disabled = false;
     googleButton.textContent = "Login Google";
