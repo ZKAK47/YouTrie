@@ -139,6 +139,13 @@ style.textContent = `
     display:flex;
   }
 
+  .item-field {
+    width:100%;
+    padding:5px;
+    margin-bottom:6px;
+    box-sizing: border-box;
+  }
+
   #navibari {
     position:fixed;
     display:flex;
@@ -250,6 +257,9 @@ function makePlaylistAppear(playlistId, videoId, position) {
     width: "300",
     onReady: () => {
       if (videoId) player.playVideo({videoId, playlistId, index:indexInt});
+      const playerWrapper = document.getElementById("youtube-play")
+      playerWrapper.style.display = ""
+      playerWrapper.dataset.status = "1"
     },
     onStateChange: (event) => {checkVideoItIs(event,player)},
     onError: playerError
@@ -274,6 +284,7 @@ function renderPlaylists(playlists) {
   if (!body_in_DOM) {document.body.appendChild(body2);body_in_DOM = true}
   const player = document.getElementById("youtube-play") || document.createElement("div")
   player.id = "youtube-play"
+  if (!player.dataset?.status) player.style.display = "none"
   if (!document.getElementById("youtube-play"))
   body2.appendChild(player)
   const container = document.getElementById("playlistsContainer") || document.createElement('div')
@@ -440,20 +451,12 @@ function setOrderOfElement(node, pl) {
   input.dataset.originalValue = Number(queries.position) + 1
   input.max = Number(limit) + 1
   input.placeholder = 'Choisir sa position (1 based)';
-  input.style.cssText = `
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 6px;
-  `;
+  input.classList.add("item-field")
 
   const ninput = document.createElement('textarea');
   ninput.maxlength="280"
   ninput.placeholder = 'Ajouter des notes';
-  ninput.style.cssText = `
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 6px;
-  `;
+  ninput.classList.add("item-field")
 
   if (queries.note) ninput.value = queries.note
 
