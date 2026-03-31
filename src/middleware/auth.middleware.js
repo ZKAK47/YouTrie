@@ -21,15 +21,12 @@ export const sessionMiddleware = (req, res, next) => {
 
 export const validateSession = async (req, res, next) => {
   const cookieSessionId = req.sessionId;
-  
-  console.log('🔒 Validating session:', cookieSessionId);
 
   // get user infos matching the sessionId
   const userObject = await oauthStore.getUser({cookie:cookieSessionId})
   const userId = userObject?.userId;
   
   if (!userId) {
-    console.log('❌ No userId found for cookie:', cookieSessionId);
     return failedSessionValidationResponse("Not authenticated",res)
   }
 
@@ -37,17 +34,13 @@ export const validateSession = async (req, res, next) => {
   const client = userObject.oauth2Client;
   
   if (!client) {
-    console.log('❌ No client found for userId:', userId);
     return failedSessionValidationResponse("Invalid session",res)
   }
 
   // check the client's credentials
   if (!client.credentials?.access_token && !client.credentials?.refresh_token) {
-    console.log('❌ Client has no credentials for userId:', userId);
     return failedSessionValidationResponse("Expired tokens",res)
   }
-
-  console.log('Session valid:', { cookie: cookieSessionId, userId });
   
   // add the Google client to the request
   req.userObject = userObject

@@ -52,8 +52,6 @@ export class YouTriePlayer {
         if (videoId) this.player.loadVideoById(videoId)
         return
       }
-
-      console.log(playlistId, videoId, index)
   
       const item = videoId ? playlistRep.playlistItemByVideoId.get(videoId) : 
         index ? playlistRep.playlist[index] : null
@@ -84,7 +82,6 @@ export class YouTriePlayer {
         this.player.loadPlaylist(videoIds,correctIndex,0)
         this.extendedPlaylist = true
         this.awaitingPlaylistExtension = true
-        console.log(videoIds, videoId, pos, index, correctIndex)
       }
   
       this.playingPlaylist = playlistId
@@ -122,7 +119,6 @@ export class YouTriePlayer {
     }
   
     onStateChange(event) {
-      console.log(event.data)
       this.nextLoadingIsAVideo = false
       if (event.data === 0) {
         const videoData = this.player.getVideoData()
@@ -145,7 +141,6 @@ export class YouTriePlayer {
         }
       } else if (event.data === -1) {
         const videoData = this.player.getVideoData()
-        console.log(videoData, this.videoThatShouldPlay,videoData?.video_id !== this.videoThatShouldPlay)
         if (videoData) {
             if (this.awaitingPlaylistExtension && videoData?.video_id !== this.videoThatShouldPlay) {
                 this.playVideo({videoId:this.videoThatShouldPlay, playlistId:this.playingPlaylist})

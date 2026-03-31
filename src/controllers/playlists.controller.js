@@ -24,8 +24,6 @@ export const playlistController = {
   getVideos: async (req, res) => {
     const { playlistId } = req.params;
     const { forcedUpdate } = req.query;
-
-    console.log(playlistId)
     
     const {userId, oauth2Client} = req.userObject
 

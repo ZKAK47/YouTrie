@@ -48,7 +48,6 @@ export class PlaylistList {
     makeSearchInput() {
         const input = document.createElement("input")
         this.mainElement.appendChild(input)
-        console.log(input)
         input.addEventListener("input", () => {
             const doResult = () => {
                 const text = input.value
@@ -344,7 +343,6 @@ export class PlaylistList {
         el.appendChild(checkbox)
         this.checkCont.push(checkbox)
         checkbox.addEventListener('change', (event) => {
-            console.log(event.target, this.elementMap.has(event.target))
             const video = this.elementMap.get(event.target)
             if (event.target.checked) {
                 this.selectVideo(video)

@@ -9,11 +9,6 @@ export const authController = {
     // oauth state generation for security reasons
     const oauthState = crypto.randomUUID();
     
-    console.log('🔐 Initiate auth:', {
-      cookieSessionId,
-      oauthState
-    });
-    
     // store temp user in RAM and get the generated oauth2client
     const {oauth2Client} = oauthStore.insertTemporaryUser({cookie:cookieSessionId, userId:oauthState})
 
@@ -32,11 +27,6 @@ export const authController = {
   callback: async (req, res) => {
     try {
       const { code, state: oauthState } = req.query;
-      
-      console.log('📞 Callback reçu:', { 
-        oauthState,
-        cookieSessionId: req.sessionId 
-      });
   
       // get the stored user info
       const clientObject = await oauthStore.getTemporaryUser({userId:oauthState})

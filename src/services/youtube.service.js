@@ -5,7 +5,6 @@ import { AppError } from '../utils/errors.js';
 class YouTubeService {
   // create a YouTube Client with a logged in Google Account
   createClient(oauth2Client) {
-    console.log(oauth2Client)
     return google.youtube({ version: 'v3', auth: oauth2Client });
   }
 
@@ -107,7 +106,6 @@ class YouTubeService {
     for (const video of sorted) {
       try {
         await this.moveVideo(youtube, { ...video, playlistId });
-        console.log(`a bougé ${video.title} de ${video.position} à ${video.newPosition}`)
       } catch (error) {
         results.failed.push(video);
         results.success = false;

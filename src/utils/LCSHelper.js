@@ -5,8 +5,6 @@ export const LCSHelper = {
         let insertAt = finalPos
         const moves = []
         
-        console.log("Départ:", updatedArray.map((v, i) => `${i}:${v}`).join(', '))
-        
         let groupToMove = findNextGroup(updatedArray, remainingElements)
         
         while (groupToMove.length) {
@@ -18,14 +16,11 @@ export const LCSHelper = {
           const headIndex = updatedArray.findIndex(e => e === firstElement)
           const tailIndex = updatedArray.findIndex(e => e === lastElement)
           
-          console.log(`\nGroupe [${groupToMove}] à ${headIndex}-${tailIndex}, cible: ${insertAt}`)
-          
           // Cas: groupe déjà à la bonne place ou chevauche la cible
           const inBetween = (insertAt > headIndex && insertAt < tailIndex)
           const exactPosition = (headIndex === insertAt)
           
           if (inBetween || exactPosition) {
-            console.log("  Chevauchement, on passe au groupe suivant")
             remainingElements = remainingElements.slice(movingElementsNum)
             groupToMove = findNextGroup(updatedArray, remainingElements)
             continue
@@ -37,12 +32,9 @@ export const LCSHelper = {
           if (upToDown) {
             // Groupe avant la cible: éléments entre tailIndex et insertAt
             const elementsBetween = insertAt - tailIndex - 1
-            console.log(`  Groupe avant cible, ${elementsBetween} éléments entre`)
             
             if (elementsBetween < movingElementsNum && elementsBetween > 0) {
               // Plus économique: déplacer les éléments entre APRÈS le groupe
-              console.log(`  Déplacer les ${elementsBetween} éléments entre`)
-              
               const betweenElements = updatedArray.splice(tailIndex + 1, elementsBetween)
               updatedArray.splice(headIndex, 0, ...betweenElements)
               
@@ -55,7 +47,6 @@ export const LCSHelper = {
               }
             } else {
               // Plus économique: déplacer le groupe
-              console.log(`  Déplacer le groupe entier (${movingElementsNum} éléments)`)
               
               const groupElements = updatedArray.splice(headIndex, movingElementsNum)
               const newPos = insertAt
@@ -73,11 +64,9 @@ export const LCSHelper = {
           } else if (downToUp) {
             // Groupe après la cible: éléments entre insertAt et headIndex
             const elementsBetween = headIndex - insertAt
-            console.log(`  Groupe après cible, ${elementsBetween} éléments entre`)
             
             if (elementsBetween < movingElementsNum && elementsBetween > 0) {
               // Plus économique: déplacer les éléments entre AVANT le groupe
-              console.log(`  Déplacer les ${elementsBetween} éléments entre`)
               
               const betweenElements = updatedArray.splice(insertAt, elementsBetween)
               updatedArray.splice(tailIndex - elementsBetween + 1, 0, ...betweenElements)
@@ -91,7 +80,6 @@ export const LCSHelper = {
               }
             } else {
               // Plus économique: déplacer le groupe
-              console.log(`  Déplacer le groupe entier (${movingElementsNum} éléments)`)
               
               const groupElements = updatedArray.splice(headIndex, movingElementsNum)
               updatedArray.splice(insertAt, 0, ...groupElements)

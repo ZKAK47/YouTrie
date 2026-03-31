@@ -26,15 +26,12 @@ async function checkAuthStatus() {
     }
     
     const data = await response.json();
-    console.log('Auth status:', data);
 
     if (data.authenticated) {
       // ✅ Le sessionId est dans la réponse, mais on n'a pas besoin de le stocker
       // On l'utilise juste pour les logs
-      console.log('Connecté avec session:', data.sessionId);
       loadPlaylists(); // ✅ Plus besoin de passer le sessionId !
     } else {
-      console.log('Non connecté');
       showLoginButton();
     }
   } catch (err) {
@@ -111,8 +108,6 @@ function openLoginPopup() {
     clearTimeout(timeoutId);
 
     if (event.data.success) {
-      console.log("✅ Connexion OAuth réussie !");
-      
       // ✅ PLUS BESOIN de stocker sessionId dans localStorage
       // Le cookie est déjà dans le navigateur (HTTP-only)
       

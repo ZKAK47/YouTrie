@@ -67,8 +67,6 @@ export const videoController = {
     }
 
     const videosToMove = youtubeHelpers.getVideosToMove(wholePlayList, videos, finalPosition)
-
-    console.log(videosToMove)
     
     const result = await youtubeService.moveVideos(youtube, playlistId, videosToMove);
     

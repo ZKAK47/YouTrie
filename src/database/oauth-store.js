@@ -31,8 +31,6 @@ async function run() {
     console.error(e)
     active_database = false
   }
-  finally {
-  }
 }
 run().catch(console.dir);
 
@@ -98,7 +96,6 @@ class OAuthStore {
     const user = this.getUser(searchCriteria);
 
     if (!user) {
-      console.error("Utilisateur introuvable.");
       return null;
     }
 

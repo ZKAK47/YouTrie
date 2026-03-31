@@ -273,7 +273,6 @@ function checkVideoItIs(event, player) {
   if (event.data === 1) {
     const {playlistId, video_id} = player.getVideoData()
     const videoId = video_id
-    console.log(playlistId, videoId)
     putPlayingVisualOnVideo({playlistId,videoId})
   }
 }
@@ -341,8 +340,6 @@ function renderVideos(playlistId, videos) {
     window.testi = playlistListInstance
   }
 
-  console.log(playlistListInstance, videos)
-
   const id = playlistListInstance.loadPlaylist({playlistId,playlistList:videos}, {forceRefresh:true})
 
   playlistListInstance.renderPlaylist(id)
@@ -356,11 +353,6 @@ function renderVideos(playlistId, videos) {
 
 function checkTheVideo(videoTarget,target) {
   const mode = document.getElementById("smode").value
-  console.log(mode)
-
-  console.log("click",target)
-
-  console.log(target.dataset)
   const data = videoTarget.dataset
   try {
     makePlaylistAppear(data.playlistId, data.videoId, data.position)
@@ -584,13 +576,11 @@ function createNavBar() {
   button.addEventListener("click",()=>{
     const arr =  Array.from(videoArray.values())
     const sortedarr = arr.sort((a,b) => a-b)
-    console.log(arr,sortedarr)
     confirmManyUpload(document.getElementById("smode").value,sortedarr)
   })
 }
 
 function confirmManyUpload(mode,array) {
-  console.log(array)
   if (!mode || mode === "single") return
   const plInfo = playlistListInstance.getPlaylistInfo()
 
@@ -684,7 +674,6 @@ function confirmManyUpload(mode,array) {
 
     try {
       const result = await setIndexOfManyVideos(playlistId, selectedVideos,value)
-      console.log(result)
       if (result.success) {
         if (result.success === "partial")
           btn.style.background = "gray"
@@ -744,7 +733,6 @@ async function setOrderOfElementC(data) {
     }
 
     const resData = await response.json();
-    console.log("✅ Déplacement effectué :", resData);
     return resData;
   } catch (err) {
     return null;
@@ -775,7 +763,6 @@ async function setIndexOfManyVideos(playlistId, videoArray, index) {
     }
 
     const resData = await response.json();
-    console.log("✅ Déplacement effectué :", resData);
     return resData;
   } catch (err) {
     return null;
@@ -791,7 +778,6 @@ function simulateManyVideosUpdate(object) {
 }
 
 function simulateVideoUpdate(playlistId, video) {
-  console.log(playlistId,video)
   const playlistEl = document.querySelector(`[data-id="${playlistId}"]`);
   if (!playlistEl) return;
 
@@ -845,7 +831,6 @@ function updateAllPositionsFromReference(playlistId, referenceIndex) {
 }
 
 function propagateIndex(videoArray, index) {
-  console.log(index, videoArray)
   const result = []
   let ourlist = [...lastClickedPlayListList]
   let previousItem
@@ -870,20 +855,14 @@ function predictYouTubeAPIAfterMove(list,toremove,afterThat = false,index = fals
 
   let newPosition
 
-  console.log("fait")
-
   if (afterThat) {
-    console.log("fait2")
     const indexOfTarget = newList.findIndex(e => e === afterThat)
     newPosition = indexOfTarget+1
   } else if (index || index === 0) {
-    console.log("fait3")
     newPosition = index
   }
 
   newList.splice(newPosition, 0, toremove)
-
-  console.log("faitP")
 
   return [newList, newPosition]
 }

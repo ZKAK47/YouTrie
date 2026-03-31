@@ -102,8 +102,6 @@ export const youtubeHelpers = {
     getVideosToMove(allVideos, videosToMove, finalPosition) {
     
       const moveLists = LCSHelper.findArrayMoveDiff([...allVideos.map(e=>e.playlistItemId)],[...videosToMove.map(e=>e.playlistItemId)],finalPosition)
-
-      console.log(moveLists)
     
       const minimumVideosToMove = this.translateMoveListToVideoToMoves(allVideos,moveLists.moves)
     
@@ -122,7 +120,6 @@ export const youtubeHelpers = {
         const playlistItemId = move.element
         const video = videoByPlaylistItemId.get(playlistItemId)
         video.newPosition = move.to
-        console.log(video)
         result.push(video)
       }
       return result
