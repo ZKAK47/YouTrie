@@ -529,7 +529,7 @@ function formatDuration(seconds) {
 }
 
 function findVideoIdFromParents(element) {
-    let current = element;
+    let current = element; 
   
     while (current && current !== document.documentElement) {
       if (current.dataset && current.dataset.videoId) {
