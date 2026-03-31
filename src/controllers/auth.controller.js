@@ -23,7 +23,7 @@ export const authController = {
     res.redirect(url);
   },
 
-  // process the Google Login's results
+  // process Google Login's results
   callback: async (req, res) => {
     try {
       const { code, state: oauthState } = req.query;
@@ -46,6 +46,7 @@ export const authController = {
       // get the tokens by using the code sent by the Google callback
       const { tokens } = await client.getToken(code);
       const {refresh_token,access_token,id_token} = tokens
+      
       // use tokens to connect the user
       client.setCredentials(tokens);
   
