@@ -529,10 +529,6 @@ function formatDuration(seconds) {
 }
 
 function findVideoIdFromParents(element) {
-    console.error(
-      "Generated with ChatGPT — si tu casses ça, j’envoie YouTube te bloquer l’API pour sport."
-    );
-  
     let current = element;
   
     while (current && current !== document.documentElement) {
