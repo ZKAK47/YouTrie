@@ -97,7 +97,7 @@ export class PlaylistList {
             const videoByVideoId = new Map()
             const videoByPlaylistItemId = new Map()
         
-            // Copie + tri propre par position numérique
+            // Sort by positions
             const sortedList = [...playlistList].sort((a, b) => {
                 const posA = Number(a?.position ?? Infinity);
                 const posB = Number(b?.position ?? Infinity);
@@ -105,8 +105,19 @@ export class PlaylistList {
             });
 
             for (const video of sortedList) {
+                // Store objects in Maps for quick access
                 videoByVideoId.set(video.videoId,video)
                 videoByPlaylistItemId.set(video.playlistItemId,video)
+
+                // Creates the keyword field for searches
+                const keywords = textToKeywordArray([
+                    video.title,
+                    video.channelTitle,
+                    video.note
+                ]
+                .join(" ")).join(" ")
+
+                video.keywords = keywords
             }
         
             place = {
@@ -244,16 +255,12 @@ export class PlaylistList {
         }
     
         const results = videos.filter(video => {
-            const haystack = textToKeywordArray([
-                video.title,
-                video.channelTitle,
-                video.note
-            ]
-            .join(" ")).join(" ")
+
+            const videoKeywords = video.keywords
     
             // Chaque mot doit apparaître au moins une fois
             return keywords.every(word =>
-                haystack.includes(word.toLowerCase())
+                videoKeywords.includes(word.toLowerCase())
             );
         });
     
@@ -493,11 +500,11 @@ function textToKeywordArray(text) {
     }
 
     const cleaned = text
-        .normalize("NFD")                    // Sépare lettres + accents
-        .replace(/[\u0300-\u036f]/g, "")     // Supprime uniquement les accents
+        .normalize("NFD")                    // Seperate special letters
+        .replace(/[\u0300-\u036f]/g, "")     // Removes accents
         .toLowerCase();
 
-    // On split uniquement par espaces, on garde tous les signes
+    // Array of words and signs
     return cleaned.split(/\s+/).filter(Boolean);
 }
 
