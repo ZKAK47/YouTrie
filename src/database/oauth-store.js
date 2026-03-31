@@ -13,6 +13,8 @@ const client = new MongoClient(uri, {
   }
 });
 
+let active_database = false
+
 const db = client.db(DB_NAME);
 const usersCollection = db.collection("users")
 
@@ -23,9 +25,11 @@ async function run() {
     // Send a ping to confirm a successful connection
     await db.command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    active_database = true
   } 
   catch (e) {
     console.error(e)
+    active_database = false
   }
   finally {
   }
@@ -48,7 +52,8 @@ class OAuthStore {
     if (cacheResult) return cacheResult;
 
     try {
-      const result = await getUserObjectByDB(cookie, this)
+      // try to find the user in the database (if there's a database)
+      const result = active_database ? await getUserObjectByDB(cookie, this) : null
       return result
     } catch (e) {
       console.error("db inaccessible", e)
@@ -84,7 +89,7 @@ class OAuthStore {
 
   async insertUser(criteria) {
     const ob = this.saveUserInMap(criteria)
-    await saveUserInDB(criteria)
+    if (active_database) await saveUserInDB(criteria) // store the user data in a database if one is correctly set
     return ob
   }
 
@@ -121,7 +126,6 @@ class OAuthStore {
     return false;
   }
 
-  // Pour ton débug et impressionner le jury
   getStats() {
     return {
       activeSessions: this.cookieMap.size,
