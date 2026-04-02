@@ -137,7 +137,7 @@ style.textContent = `
     top:1%;
     left:1%;
     background: #00000077;
-    display:flex
+    display:flex;
     padding: 5px;
     border-radius: 10px;
   }
