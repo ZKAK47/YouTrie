@@ -321,12 +321,12 @@ function renderPlaylists(playlists) {
 }
 
 // fetch the videos of a given playlistId
-export async function fetchVideos(playlistId) {
+export async function fetchVideos(playlistId, render = true) {
   try {
       const res = await fetch(`/api/playlists/${playlistId}/videos`, {credentials:'include'})
       if (!res.ok) throw new Error('Erreur serveur vidéos')
       const videos = await res.json()
-      renderVideos(playlistId, videos)
+      renderVideos(playlistId, videos, render)
   } catch (err) {
       console.error(err)
       alert('Impossible de charger les vidéos')
@@ -338,7 +338,7 @@ const playlistMap = new Map()
 let playlistListInstance
 
 // renders a list of videos in a container
-function renderVideos(playlistId, videos) {
+function renderVideos(playlistId, videos, render) {
   createNavBar()
   if (!playlistListInstance) {
     const container = document.createElement('div')
@@ -350,7 +350,9 @@ function renderVideos(playlistId, videos) {
 
   const id = playlistListInstance.loadPlaylist({playlistId,playlistList:videos}, {forceRefresh:true})
 
-  playlistListInstance.renderPlaylist(id)
+  console.log(render)
+  if (render) playlistListInstance.renderPlaylist(id)
+  else playlistListInstance.updatePlaylist()
 
   playlistMap.set(playlistId,videos)
 
@@ -541,7 +543,7 @@ function setOrderOfElement(node, pl) {
 
     setTimeout(() => {
       overlay.remove();
-      fetchVideos(playlistId)
+      fetchVideos(playlistId, false)
     },3000)
   });
 
@@ -705,7 +707,7 @@ function confirmManyUpload(mode,array) {
 
     setTimeout(() => {
       overlay.remove();
-      fetchVideos(playlistId)
+      fetchVideos(playlistId, false)
     },3000)
   });
 

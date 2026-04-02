@@ -27,9 +27,10 @@ export class PlaylistList {
         this.endSelected = null
         this.selected = new Map()
         this.selectedOrder = new Map()
-        this.videoElMap = new Map()
+        this.playlistItemElMap = new Map()
         this.elementMap = new WeakMap()
         this.checkBoxesActives = false
+        this.currentlyRenderedItems = new Map()
         this.setupListener()
         if (search) {
             this.makeSearchInput()
@@ -132,6 +133,16 @@ export class PlaylistList {
     
         return resolvedId;
     }
+
+    updatePlaylist() {
+        const playlistId = this.actualPlaylist
+        const itemMap = this.playlists[playlistId].playlistItemIdMap
+        for (const [playlistItemId, videoNode] of this.currentlyRenderedItems.entries()) {
+            const video = itemMap.get(playlistItemId)
+            updateVideoNode(videoNode,video)
+            console.log(videoNode)
+        }
+    }
     
     renderPlaylist(playlistId = this.actualPlaylist, page = 0, {videoList} = {}) {
         const mainEl = this.mainElement;
@@ -161,11 +172,12 @@ export class PlaylistList {
         // Créer les nodes vidéos
         const vidContainer = document.createElement("div")
         vidContainer.classList.add("playlistItems-container")
+        this.currentlyRenderedItems = new Map()
         for (let i = start; i < end; i++) {
             const video = playlistList[i]
             const div = getVideoNode(video);
             this.elementMap.set(div,video)
-            this.videoElMap.set(video.playlistItemId, div)
+            this.playlistItemElMap.set(video.playlistItemId, div)
             if (this.checkBoxesActives) {
                 const checkbox = this.createCheckBox(div)
                 div.appendChild(checkbox)
@@ -173,6 +185,7 @@ export class PlaylistList {
             }
             if (this.selected.has(video.playlistItemId)) addSelectedProperties(div, this.selectedOrder.get(video.playlistItemId))
             vidContainer.appendChild(div);
+            this.currentlyRenderedItems.set(video.playlistItemId, div)
         }
         container.appendChild(vidContainer)
 
@@ -287,7 +300,7 @@ export class PlaylistList {
                              `[data-playlist-item-id="${video.playlistItemId}"]` +
                              `[data-video-id="${video.videoId}"]`;
     
-            const element = this.videoElMap.get(video.playlistItemId);
+            const element = this.playlistItemElMap.get(video.playlistItemId);
     
             if (element) {
                 element.classList.remove("selected")
@@ -357,7 +370,7 @@ export class PlaylistList {
     }
 
     selectVideo(video) {
-        const el = this.videoElMap.get(video.playlistItemId)
+        const el = this.playlistItemElMap.get(video.playlistItemId)
         if (this.mode === "multi") {
             this.selected.set(video.playlistItemId,video)
             addSelectedProperties(el)
@@ -402,7 +415,7 @@ export class PlaylistList {
         this.selected.delete(video.playlistItemId)
         this.selectedOrder.delete(video.playlistItemId)
         if (this.mode === "order") this.refreshOrder()
-        const element = this.videoElMap.get(video.playlistItemId)
+        const element = this.playlistItemElMap.get(video.playlistItemId)
         removeSelectedProperties(element)
     }
 
@@ -415,7 +428,7 @@ export class PlaylistList {
             const number = i + 1
             const playlistItemId = array[i][0]
             this.selectedOrder.set(playlistItemId,i + 1)
-            const el = this.videoElMap.get(playlistItemId)
+            const el = this.playlistItemElMap.get(playlistItemId)
             addSelectedProperties(el,number)
         }
     }
