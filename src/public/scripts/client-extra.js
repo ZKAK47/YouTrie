@@ -524,7 +524,13 @@ function setOrderOfElement(node, pl) {
       const result = await setOrderOfElementC(btn.dataset)
       if (result.success) {
         btn.style.background = "green"
-        simulateVideoUpdate(btn.dataset.playlistId,btn.dataset)
+        try {
+          simulateVideoUpdate(btn.dataset.playlistId,btn.dataset)
+        } catch (e) {
+          console.error(e)
+        }
+      } else {
+        btn.style.background = "orange"
       }
     } catch (e) {
       console.error(e)
