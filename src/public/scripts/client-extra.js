@@ -5,27 +5,32 @@ const style = document.createElement("style")
 
 style.textContent = `
   #playlistsContainer {
-    display:flex;
-    max-width:50vw;
-    flex-wrap:wrap;
-    gap:10px;
+    display: flex;
+    justify-content: center;
+    max-width: 50vw;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background: #222222;
+    border-radius: 10px;
+    gap: 10px;
   }
 
-.videos-wrapper {
+  .videos-wrapper {
     display:flex;
     flex-direction: column;
     width: 20%;
     gap: 5px;
-    border: 1px solid #AAA; /* optionnel, pour voir le container */
-    padding: 5px;           /* optionnel, un peu d’air */
-}
+    background: #222;
+    border-radius: 10px;
+    padding: 10px;
+    max-height:80vh;
+  }
 
-.videosContainer {
+.videosContainer, .playlistItems-container {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    border: 1px solid #ccc; /* optionnel, pour voir le container */
-    padding: 5px;           /* optionnel, un peu d’air */
+    overflow-y:auto;
 }
 
   .video img {
@@ -133,6 +138,8 @@ style.textContent = `
     left:1%;
     background: #00000077;
     display:flex
+    padding: 5px;
+    border-radius: 10px;
   }
 
   .videos-container {
@@ -238,6 +245,7 @@ function playerError(event) {
   console.log(event.data, event);
 }
 
+// renders the YouTube Iframe player
 function makePlaylistAppear(playlistId, videoId, position) {
   const pl = nodeToPlayer.get("youtube-play");
   const videos = playlistMap.get(playlistId);
@@ -269,6 +277,7 @@ function makePlaylistAppear(playlistId, videoId, position) {
   player.loadPlayList(playlistId, videos);
 }
 
+// Highlight the currently played video if there's any
 function checkVideoItIs(event, player) {
   if (event.data === 1) {
     const {playlistId, video_id} = player.getVideoData()
@@ -278,7 +287,7 @@ function checkVideoItIs(event, player) {
 }
 
 
-// 2️⃣ Render les playlists
+// Render playlists
 function renderPlaylists(playlists) {
   if (!body_in_DOM) {document.body.appendChild(body2);body_in_DOM = true}
   const player = document.getElementById("youtube-play") || document.createElement("div")
@@ -298,7 +307,7 @@ function renderPlaylists(playlists) {
       div.innerHTML = `
           <img src="${pl.thumbnail}" alt="${pl.title}">
           <h3 class="title">${pl.title}</h3>
-          <small class="little-note">${pl.itemCount} vidéos</small>
+          <small class="little-note">${pl.itemCount}</small>
       `
       // Click pour charger les vidéos
       div.addEventListener('click', () => {
@@ -311,7 +320,7 @@ function renderPlaylists(playlists) {
   body2.appendChild(container)
 }
 
-// 3️⃣ Récupérer les vidéos d’une playlist
+// fetch the videos of a given playlistId
 export async function fetchVideos(playlistId) {
   try {
       const res = await fetch(`/api/playlists/${playlistId}/videos`, {credentials:'include'})
@@ -328,9 +337,8 @@ const playlistMap = new Map()
 
 let playlistListInstance
 
-// 4️⃣ Render les vidéos
+// renders a list of videos in a container
 function renderVideos(playlistId, videos) {
-  // Supprime l'ancien container de vidéos si existant
   createNavBar()
   if (!playlistListInstance) {
     const container = document.createElement('div')
@@ -355,11 +363,13 @@ function checkTheVideo(videoTarget,target) {
   const mode = document.getElementById("smode").value
   const data = videoTarget.dataset
   try {
+    // Play selected video
     makePlaylistAppear(data.playlistId, data.videoId, data.position)
   } catch (e) {
     console.error("Problème d'affichage de vidéo", e)
   }
 
+  // finds the main element of the clicked node inside the video
   let tocheck = target
 
   while (tocheck.parentElement && !tocheck.classList.contains("video")) tocheck = tocheck.parentElement
@@ -402,6 +412,7 @@ function removeVideoToMap(key) {
 }
 
 
+// Open a menu in which the user can set the new position and the notes
 function setOrderOfElement(node, pl) {
   if (!(node instanceof HTMLElement)) return;
   const plEl = document.getElementById(node.dataset.playlistId)

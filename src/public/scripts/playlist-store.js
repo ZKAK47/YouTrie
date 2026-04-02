@@ -159,6 +159,8 @@ export class PlaylistList {
         container.innerHTML = '';
     
         // Créer les nodes vidéos
+        const vidContainer = document.createElement("div")
+        vidContainer.classList.add("playlistItems-container")
         for (let i = start; i < end; i++) {
             const video = playlistList[i]
             const div = getVideoNode(video);
@@ -170,8 +172,9 @@ export class PlaylistList {
                 this.elementMap.set(checkbox,video)
             }
             if (this.selected.has(video.playlistItemId)) addSelectedProperties(div, this.selectedOrder.get(video.playlistItemId))
-            container.appendChild(div);
+            vidContainer.appendChild(div);
         }
+        container.appendChild(vidContainer)
 
         this.actualPlaylist = playlistId
     
