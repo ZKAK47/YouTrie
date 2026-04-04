@@ -190,20 +190,15 @@ export class PlaylistList {
         container.appendChild(vidContainer)
 
         this.actualPlaylist = playlistId
+        const totalPages = Math.ceil(playlistList.length / this.renderLimit);
     
 
-        if (!videoList) {
+        if (!videoList && totalPages > 1) {
             // --- Pagination nav encapsulé ---
             const nav = document.createElement('div');
-            nav.classList.add('pagination-nav'); // classe pour le style
-            nav.style.display = 'flex';
-            nav.style.justifyContent = 'center';
-            nav.style.alignItems = 'center';
-            nav.style.gap = '5px';
-            nav.style.marginTop = '10px';
+            nav.className = 'pagination-nav'; // classe pour le style
         
             // Calcul du nombre total de pages
-            const totalPages = Math.ceil(playlistList.length / this.renderLimit);
         
             // Clamp de la page demandée
             const validPage = Math.max(0, Math.min(page, totalPages - 1));
@@ -473,17 +468,46 @@ function createVideoNode(v) {
     div.dataset.position = v.position
     div.dataset.note = v.note ? v.note : ""
     div.value = v.position + 1
-    div.innerHTML = `
-        <div class="thumbnail-wrapper" style="position:relative">
-          ${v.duration ? `<small class="duration">${formatDuration(v.duration)}</small>` : ""}
-          ${v.thumbnail ? `<img src="${v.thumbnail}" alt="${v.title}">` : ""}
-        </div>
-        <div class="label-container">
-            <h4 class="title">${v.title}</h3>
-            <span class="channel">${v.channelTitle || "-"}</span>
-        </div>
-        <small class="little-note">${v.position + 1}</small>
-    `
+        
+        const thumbnailWrapper = document.createElement("div");
+        thumbnailWrapper.className = "thumbnail-wrapper";
+        thumbnailWrapper.style.position = "relative";
+    
+        if (v.duration) {
+            const duration = document.createElement("small");
+            duration.className = "duration";
+            duration.textContent = formatDuration(v.duration);
+            thumbnailWrapper.appendChild(duration);
+        }
+    
+        if (v.thumbnail) {
+            const img = document.createElement("img");
+            img.src = v.thumbnail;
+            img.alt = v.title;
+            thumbnailWrapper.appendChild(img);
+        }
+    
+        const labelContainer = document.createElement("div");
+        labelContainer.className = "label-container";
+    
+        const title = document.createElement("h4");
+        title.className = "title";
+        title.textContent = v.title;
+    
+        const channel = document.createElement("span");
+        channel.className = "channel";
+        channel.textContent = v.channelTitle || "-";
+    
+        labelContainer.appendChild(title);
+        labelContainer.appendChild(channel);
+    
+        const position = document.createElement("small");
+        position.className = "little-note";
+        position.textContent = v.position + 1;
+    
+        div.appendChild(thumbnailWrapper);
+        div.appendChild(labelContainer);
+        div.appendChild(position);
     videoNodeMap.set(v.playlistItemId, div)
     return div
 }
@@ -568,5 +592,37 @@ style.textContent = `
         font-weight: bold;
         cursor:default;
     }
+
+    
+    .videosContainer, .playlistItems-container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        overflow-y:auto;
+    }
+
+    .order-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      top: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: large;
+      font-weight: bold;
+      background-color: #00000078;
+    }
+    
+    .pagination-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
 `;
 document.head.appendChild(style);
