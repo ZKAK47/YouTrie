@@ -26,13 +26,6 @@ style.textContent = `
     max-height:80vh;
   }
 
-.videosContainer, .playlistItems-container {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    overflow-y:auto;
-}
-
   .video img {
     width:100%;
   }
@@ -599,7 +592,7 @@ function createNavBar() {
   })
 }
 
-function confirmManyUpload(mode,array) {
+function confirmManyUpload(mode) {
   if (!mode || mode === "single") return
   const plInfo = playlistListInstance.getPlaylistInfo()
 
@@ -646,7 +639,6 @@ function confirmManyUpload(mode,array) {
   btn.style.cssText = `
     width: 100%;
     padding: 6px;
-    cursor: pointer;
   `;
   btn.disabled = true;
 
